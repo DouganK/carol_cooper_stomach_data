@@ -1,0 +1,27 @@
+# R session/history
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio files
+.Rproj.user/
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Quarto / R Markdown intermediates
+*_files/
+*.utf8.md
+*.knit.md
+
+# Package build files
+*.tar.gz
+
+# renv (optional — see note below)
+renv/library/
+renv/staging/
