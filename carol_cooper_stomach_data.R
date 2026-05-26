@@ -499,40 +499,40 @@ invalid_lifestages
 
 #########################reformat table for stomach submission####################
 #Stomach table
-df_vol <- df_vol %>%
-  rename(`1-MATURITY` = `LIFE-STAGE...11`,
-         `2-MATURITY` = `LIFE-STAGE...15`,
-         `3-MATURITY` = `LIFE-STAGE...19`)
+df_wts <- df_wts %>%
+  rename(`1-MATURITY` = `1-LIFE-STAGE`,
+         `2-MATURITY` = `2-LIFE-STAGE`,
+         `3-MATURITY` = `3-LIFE-STAGE`)
 
 #non m012 fish only:
-stom_voldf<-df_vol %>%
+stomach_wts<-df_wts %>%
   filter(!is.na(`1-PREY`) & `1-PREY` != "" & `1-PREY` !="M012")
 
 #--Pivot table into long format--#   
 prey_slots <- c("1", "2", "3")  
 
 long_list <- lapply(prey_slots, function(slot) {
-  stom_voldf %>%
+  stomach_wts %>%
     select(#DATA_SOURCE="CAROL",
       UNIQUE_FISH,
       paste0(slot, "-PREY"),
       paste0(slot, "-MATURITY"),
-      paste0(slot, "-VOL (cc)"),
+      paste0(slot, "-Weight (mg)"),
       paste0(slot, "-D"),
       SPECIMEN_STOMACH_COMMENT=COMMENTS) %>%
     rename(
       PREY_SPECIES_CODE = paste0(slot, "-PREY"),
       PREY_MATURITY = paste0(slot, "-MATURITY"),
-      PREY_VOLUME = paste0(slot, "-VOL (cc)"),
+      PREY_WEIGHT_MG = paste0(slot, "-Weight (mg)"),
       DIGESTION_STATE_CODE = paste0(slot, "-D")
     ) %>%
     filter(!is.na(PREY_SPECIES_CODE) & PREY_SPECIES_CODE != "")
 })
 
 # Combine all prey slots into one long table
-stomach <- bind_rows(long_list)
+stomach_wts <- bind_rows(long_list)
 
-stomach<-stomach%>%
+stomach_wts<-stomach_wts%>%
   mutate(PREY_LENGTH_MM="",
          PROCESS_LOCATION="LAB",
          SPECIMEN_ID="",
@@ -563,11 +563,11 @@ GFB_maturity <- tbl(con, "GFB PREY_MATURITY")%>%
   collect()
 
 # Make join columns same type
-stomach$DIGESTION_STATE_CODE <- as.character(stomach$DIGESTION_STATE_CODE)
+stomach_wts$DIGESTION_STATE_CODE <- as.character(stomach$DIGESTION_STATE_CODE)
 GFB_digestion_state$DIGESTION_STATE_CODE <- as.character(GFB_digestion_state$DIGESTION_STATE_CODE)
 
 # Digestion state description
-stomach <- stomach %>%
+stomach_wts <- stomach_wts %>%
   left_join(
     GFB_digestion_state %>%
       select(DIGESTION_STATE_CODE, DIGESTION_STATE_DESC_new = DIGESTION_STATE_DESC),
@@ -583,7 +583,7 @@ stomach <- stomach %>%
   select(-DIGESTION_STATE_DESC_new)
 
 # Maturity code
-stomach <- stomach %>%
+stomach_wts <- stomach_wts %>%
   left_join(
     GFB_maturity_codes %>%
       select(PREY_MATURITY_CODE, MATURITY_CODE_new = MATURITY_CODE),
@@ -596,4 +596,4 @@ stomach <- stomach %>%
 
 
 #volume column seems like it has way too many decimals;
-stomach$PREY_VOLUME <- round(stomach$PREY_VOLUME, 3)
+stomach_wts$PREY_VOLUME <- round(stomach_wts$PREY_VOLUME, 3)
