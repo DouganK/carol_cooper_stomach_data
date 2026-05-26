@@ -57,13 +57,13 @@ df_vol <- df_vol %>%
   )
 #some of these didn't have A/J age indicators so we might have to circle back to this problem
 
-#UNIQUE_FISH;
+#UNIQUE_FISH (doesn't have A or J);
 df_vol <- df_vol %>% 
   mutate(
     UNIQUE_FISH = paste(
       `CRUISE NUMBER`,
       STATION,
-      `SPECIES CODE`,
+      str_remove(`SPECIES CODE`, "[AJ]$"),
       `FISH NUMBER`,
       sep = "-"
     )
@@ -141,7 +141,7 @@ df_vol <- df_vol %>%
   ) %>%
   select(-is_age_friend)
 
-##rerun missing catch/specimen troublshooting;
+##rerun missing catch/specimen troubleshooting;
 specimen_not_in_db2 <- df_vol %>%
   filter(!UNIQUE_FISH %in% specimen_db$UNIQUE_FISH)
 #over half...weird amount. would expect a lot less or a lot more
