@@ -499,7 +499,8 @@ invalid_lifestages <- bind_rows(
 invalid_lifestages
 
 #########################reformat table for stomach submission####################
-#Stomach table
+####Stomach table
+#####
 df_wts <- df_wts %>%
   rename(`1-MATURITY` = `1-LIFE-STAGE`,
          `2-MATURITY` = `2-LIFE-STAGE`,
@@ -564,7 +565,7 @@ GFB_maturity <- tbl(con, "GFB PREY_MATURITY")%>%
   collect()
 
 # Make join columns same type
-stomach_wts$DIGESTION_STATE_CODE <- as.character(stomach$DIGESTION_STATE_CODE)
+stomach_wts$DIGESTION_STATE_CODE <- as.character(stomach_wts$DIGESTION_STATE_CODE)
 GFB_digestion_state$DIGESTION_STATE_CODE <- as.character(GFB_digestion_state$DIGESTION_STATE_CODE)
 
 # Digestion state description
