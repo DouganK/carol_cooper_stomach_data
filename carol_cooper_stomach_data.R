@@ -5,6 +5,7 @@ library(tidyr)
 library(lubridate)
 library(stringr)
 library(openxlsx)
+library(writexl)
 
 #upload datafile to be submitted to db
 #data set that has volumes rather than weights for prey items:
@@ -596,4 +597,35 @@ stomach_wts <- stomach_wts %>%
 
 
 #volume column seems like it has way too many decimals;
-stomach_wts$PREY_VOLUME <- round(stomach_wts$PREY_VOLUME, 3)
+stomach_wts$PREY_VOLUME <- round(stomach_wts$PREY_VOLUME, 3)##########
+#Create workbooks:
+ 
+#volume dataset we'll just write stomach for now
+
+#Add all the table into one workbook as per AT's request
+# Create a new workbook
+
+write_xlsx(stomach, "carol_cooper_historic_stomach_volume_data_2026-05-28.xlsx")
+
+#weight data:
+wb <- createWorkbook()
+# Create a named list of your tables
+tables <- list(
+  `3_SPECIMEN` = specimen_wts,
+  `3A_SPECIMEN_STOMACH`= stomach_wts
+)
+
+# Loop through each table and add it to the workbook
+for (sheet_name in names(tables)) {
+  addWorksheet(wb, sheet_name)
+  writeData(wb, sheet = sheet_name, tables[[sheet_name]], startRow = 1, startCol = 1, colNames = TRUE)
+}
+
+# Save the workbook
+saveWorkbook(
+  wb,
+  "carol_cooper_historic_stomach_weights_data_2026-05-28.xlsx",
+  overwrite = FALSE
+)
+
+ 
