@@ -88,10 +88,19 @@ specimen_not_in_db <- df_vol %>%
   filter(!UNIQUE_FISH %in% specimen_db$UNIQUE_FISH)
 #over half...weird amount. would expect a lot less or a lot more
 
+#filter for fish in db that also occur in df_vol:
+db_df_vol<-specimen_db %>%
+  filter(UNIQUE_FISH %in% df_vol$UNIQUE_FISH)
+
+db_df_wts<-specimen_db %>%
+  filter(UNIQUE_FISH %in% stomach_wts$UNIQUE_FISH)
+
+db_df_vol<-specimen_db %>%
+  filter(UNIQUE_FISH %in% df_vol$UNIQUE_FISH)
+
 #filter for unique_catch not in the catch table in BCSI DB
 catch_not_in_db <- df_vol %>%
   filter(!UNIQUE_CATCH %in% catch_db$UNIQUE_CATCH)
-
 
 #friggers okay lets flag what's not in the db to get a better idea what's going on;
 df_vol <- df_vol %>%
