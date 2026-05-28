@@ -597,7 +597,99 @@ stomach_wts <- stomach_wts %>%
 
 
 #volume column seems like it has way too many decimals;
-stomach_wts$PREY_VOLUME <- round(stomach_wts$PREY_VOLUME, 3)##########
+stomach_wts$PREY_VOLUME <- round(stomach_wts$PREY_VOLUME, 3)
+
+###specimen table###
+###
+#none of these fish are in the db in specimen yet so don't need to join can just create table:
+#are any of these fish already dried or bombed?...;
+con <- dbConnect(odbc::odbc(), "Salmon_DB")
+dry_wts_db <- tbl(con, "6B_ENERGY_DRY_WEIGHTS")%>%
+  collect()
+
+con <- dbConnect(odbc::odbc(), "Salmon_DB")
+calorimetry_db <- tbl(con, "6A_ENERGY_CALORIMETRY")%>%
+  collect()
+
+#filter for unique_fish in the dry weights & calormetry tables in BCSI DB
+drytable_fish_wts <- stomach_wts %>%
+  filter(UNIQUE_FISH %in% dry_wts_db$UNIQUE_FISH)
+#none....
+drytable_fish_vol <- stomach %>%
+  filter(UNIQUE_FISH %in% dry_wts_db$UNIQUE_FISH)
+
+cal_fish_vol <- stomach %>%
+  filter(UNIQUE_FISH %in% calorimetry_db$UNIQUE_FISH)
+#none...
+
+
+specimen_wts<- df_wts %>%
+  transmute(
+    UNIQUE_EVENT,
+    UNIQUE_CATCH,
+    UNIQUE_FISH,
+    SPECIES_CODE=`SPECIES CODE`,
+    SPECIES,
+    Species_Recorded=SPECIES,
+    SPECIES_CHANGED=NA_character_,
+    FISH_NUM=`FISH NUMBER`,
+    LENGTH= `FL (mm)`,
+    LENGTH_UNIT_CODE = if_else(!is.na(LENGTH), 2, NA_real_),
+    LENGTH_UNIT = if_else(!is.na(LENGTH), "MM", NA_character_),
+    LENGTH_TYPE_CODE = if_else(!is.na(LENGTH), 1, NA_real_),
+    LENGTH_TYPE = if_else(!is.na(LENGTH), "Fork Length", NA_character_),
+    WEIGHT=NA_character_,
+    WEIGHT_TYPE_CODE=NA_character_,
+    WEIGHT_TYPE=NA_character_,
+    WEIGHT_UNIT_CODE=NA_character_,
+    WEIGHT_UNIT=NA_character_,
+    WEIGHT_STATE=NA_character_,
+    LAB_PROCESSED_DATE=`dissection _date`,
+    SEX_CODE=NA_character_,
+    SEX=NA_character_,
+    AD_YN=NA_character_,
+    CWT_YN=NA_character_,
+    MARKED_YN=NA_character_,
+    OTOLITH_YN=NA_character_,
+    DNA_YN=NA_character_,
+    STOMACH_YN="Y",
+    RNA_YN=NA_character_,
+    BLOOD_YN=NA_character_,
+    WHOLE_BODY_YN=NA_character_,
+    MUSCLE_YN=NA_character_,
+    SCALES_YN=NA_character_,
+    GONADS_YN=NA_character_, 
+    SAMPLER="Carol Cooper",
+    RECORDER="Carol Cooper",
+    ALT_LENGTH=NA_character_,
+    ALT_LENGTH_UNIT_CODE=NA_character_,
+    ALT_LENGTH_UNIT=NA_character_,
+    ALT_LENGTH_TYPE_CODE=NA_character_,
+    ALT_LENGTH_TYPE=NA_character_,
+    ALT2_LENGTH=NA_character_,
+    ALT2_LENGTH_UNIT_CODE=NA_character_,
+    ALT2_LENGTH_UNIT=NA_character_,
+    ALT2_LENGTH_TYPE_CODE=NA_character_,
+    ALT2_LENGTH_TYPE=NA_character_,
+    ALT_WEIGHT=NA_character_,
+    ALT_WEIGHT_TYPE_CODE=NA_character_,
+    ALT_WEIGHT_TYPE=NA_character_,
+    ALT_WEIGHT_UNIT_CODE=NA_character_,
+    ALT_WEIGHT_UNIT=NA_character_,
+    ALT_WEIGHT_STATE=NA_character_,
+    OLD_UNIQUE_CATCH=NA_character_,
+    SPECIMEN_ID=NA_character_,
+    SPECIMEN_COMMENT=NA_character_,
+    SAMPLE_COMMENT=NA_character_,
+    EXTERNAL_SAMPLE=NA_character_,
+    EXTERNAL_SAMPLE2=NA_character_,
+    SEALICE_PRESENCE_YN=NA_character_,
+    SEALICE_COUNTS=NA_character_
+  )
+
+
+
+##########
 #Create workbooks:
  
 #volume dataset we'll just write stomach for now
